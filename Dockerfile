@@ -1,4 +1,4 @@
-FROM ubuntu:trusty
+FROM ubuntu:focal
 
 RUN apt-get update; apt-get clean
 
@@ -21,12 +21,12 @@ RUN apt-get install -y x11vnc xvfb fluxbox wget wmctrl
 # # Install wmctrl.
 # RUN apt-get install -y wmctrl
 
-# Set the Chrome repo.
-RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-    && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
+# # Set the Chrome repo.
+# RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+#     && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
 
-# Install Chrome.
-RUN apt-get update && apt-get -y install google-chrome-stable
+# # Install Chrome.
+# RUN apt-get update && apt-get -y install google-chrome-stable
 
 COPY bootstrap.sh /bootstrap.sh
 RUN chmod 755 /bootstrap.sh
