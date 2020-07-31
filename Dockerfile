@@ -28,6 +28,7 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 # Install Chrome.
 RUN apt-get update && apt-get -y install google-chrome-stable
 
-COPY bootstrap.sh /
+COPY bootstrap.sh /bootstrap.sh
+RUN chmod 755 /bootstrap.sh
 
 CMD '/bootstrap.sh'
