@@ -2,33 +2,21 @@ FROM ubuntu:focal
 
 RUN apt-get update; apt-get clean
 
-# Add a user for running applications.
-RUN useradd apps
-RUN mkdir -p /home/apps && chown apps:apps /home/apps
-
 # Install x11vnc.
-RUN apt-get install -y x11vnc xvfb fluxbox wget wmctrl
+RUN apt-get install -y x11vnc xvfb fluxbox wget wmctrl sudo
 
-# # Install xvfb.
-# RUN apt-get install -y xvfb
+# Add a user for running applications.
+RUN useradd -m apps
 
-# # Install fluxbox.
-# RUN apt-get install -y fluxbox
+# Give sudo access to non-root user 'apps'
+RUN echo "apps  ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/apps
 
-# # Install wget.
-# RUN apt-get install -y wget
+# Supress sudo setrlimit , find at github issue https://github.com/sudo-project/sudo/issues/42#
+RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 
-# # Install wmctrl.
-# RUN apt-get install -y wmctrl
-
-# # Set the Chrome repo.
-# RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
-#     && echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list
-
-# # Install Chrome.
-# RUN apt-get update && apt-get -y install google-chrome-stable
-
+# Copy Bootstrap script
 COPY bootstrap.sh /bootstrap.sh
 RUN chmod 755 /bootstrap.sh
+USER apps
 
 CMD '/bootstrap.sh'
