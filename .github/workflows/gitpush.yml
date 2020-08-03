@@ -61,13 +61,13 @@ jobs:
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
 
           # Check if ref is master branch then use latest else handle using specified regex
-          if [[ "${{ github.ref }}" == "master" ]]
+          if [[ "$VERSION" == "master" ]]
           then
               VERSION=latest
-          elif [[ "${{ github.ref }}" =~ ^v([0-9.]+)$ ]]
+          elif [[ "$VERSION" =~ ^v([0-9.]+)$ ]]
           then
               VERSION=$(echo $VERSION | sed -e 's/^v//')
-          elif [[ "${{ github.ref }}" =~ ^([A-Za-z-]+)$ ]]
+          elif [[ "$VERSION" =~ ^([A-Za-z-]+)$ ]]
           then
               echo $VERSION
           fi
