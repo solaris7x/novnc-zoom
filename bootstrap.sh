@@ -11,13 +11,14 @@ main() {
     launch_xvfb
     launch_window_manager
     run_vnc_server
+    run_novnc_server
 }
 
 launch_xvfb() {
     # Set defaults if the user did not specify envs.
     export DISPLAY=${XVFB_DISPLAY:-:1}
     local screen=${XVFB_SCREEN:-0}
-    local resolution=${XVFB_RESOLUTION:-1280x720x24}
+    local resolution=${XVFB_RESOLUTION:-1280x720x16}
     local timeout=${XVFB_TIMEOUT:-5}
     
     # Start and wait for either Xvfb to be fully up or we hit the timeout.
@@ -39,7 +40,7 @@ launch_window_manager() {
     local timeout=${XVFB_TIMEOUT:-5}
     
     # Start and wait for either fluxbox to be fully up or we hit the timeout.
-    fluxbox &
+    openbox &
     local loopCount=0
     until wmctrl -m > /dev/null 2>&1
     do
@@ -70,8 +71,12 @@ run_vnc_server() {
         echo "${G_LOG_W} The VNC server will NOT ask for a password."
     fi
     
-    x11vnc -display ${DISPLAY} -forever ${passwordArgument} &
-    wait $!
+    x11vnc -display ${DISPLAY} -noncache -forever ${passwordArgument} &
+    # wait $!
+}
+
+run_novnc_server() {
+    ${NOVNC_FOLDER}/easy-novnc_linux-64bit -a ":${PORT:-8080}" ${EASYNOVNC_ARGS:-''}
 }
 
 control_c() {
