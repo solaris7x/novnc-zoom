@@ -56,8 +56,7 @@ launch_window_manager() {
 
 run_vnc_server() {
     local passwordArgument='-nopw'
-    
-    if [ -n "${VNC_SERVER_PASSWORD}" ]
+    if [ ! -z "${VNC_SERVER_PASSWORD:-}" ]
     then
         local passwordFilePath="${HOME}/x11vnc.pass"
         if ! x11vnc -storepasswd "${VNC_SERVER_PASSWORD}" "${passwordFilePath}"
@@ -76,7 +75,7 @@ run_vnc_server() {
 }
 
 run_novnc_server() {
-    ${NOVNC_FOLDER}/easy-novnc_linux-64bit -a ":${PORT:-8080}" ${EASYNOVNC_ARGS:-''}
+    /easy-novnc_linux-64bit -a ":${PORT:-8080}" ${EASY_NOVNC_ARGS:-''}
 }
 
 control_c() {

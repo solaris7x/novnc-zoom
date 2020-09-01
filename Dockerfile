@@ -1,38 +1,27 @@
 FROM ubuntu:focal
 
-#Setup easy-novnc https://github.com/pgaskin/easy-novnc
-ENV NOVNC_FOLDER=/home/apps/novnc \
-    DEBIAN_FRONTEND=noninteractive \
+#Set apt to non-interactive
+ENV DEBIAN_FRONTEND=noninteractive \
     DEBCONF_NONINTERACTIVE_SEEN=true
 
-# Install x11vnc.
+# Install desktop + midori + zoom + cleanup
 RUN apt-get update; apt-get clean; \
-    apt-get install -y x11vnc xvfb wget wmctrl sudo openbox xdg-utils \
-    && apt install -y --no-install-recommends midori 
+    apt-get install -y x11vnc xvfb wget wmctrl openbox xdg-utils \
+    && apt install -y --no-install-recommends midori \
+    && wget --no-check-certificate -O '/tmp/zoom.deb' 'https://zoom.us/client/latest/zoom_amd64.deb' \
+    && apt install -y --no-install-recommends '/tmp/zoom.deb' \
+    && rm -rf '/tmp/zoom.deb' \
+    && rm -rf /var/lib/apt/lists/*;
 
-
-# Add a user for running applications.
-RUN useradd -m apps
-
-# Give sudo access to non-root user 'apps'
-RUN echo "apps  ALL=(ALL) NOPASSWD:ALL" | tee /etc/sudoers.d/apps
-
-# Supress sudo setrlimit , find at github issue https://github.com/sudo-project/sudo/issues/42#
-RUN echo "Set disable_coredump false" >> /etc/sudo.conf
-
-#Setup herbstluft
-RUN mkdir -p ${NOVNC_FOLDER}
-
-#Install zoom 
-RUN wget --no-check-certificate -O '/home/apps/zoom.deb' 'https://zoom.us/client/latest/zoom_amd64.deb' \
-    && apt install -y --no-install-recommends '/home/apps/zoom.deb' \
-    && rm -rf '/home/apps/zoom.deb' \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy Bootstrap script
+# Copy Bootstrap script + easy-novnc https://github.com/pgaskin/easy-novnc
 COPY bootstrap.sh /bootstrap.sh
-COPY easy-novnc_linux-64bit ${NOVNC_FOLDER}/easy-novnc_linux-64bit
-RUN chmod 755 /bootstrap.sh
+COPY easy-novnc_linux-64bit /easy-novnc_linux-64bit
+
+#Add user apps and set root passwd to "docker"
+RUN chmod 755 /bootstrap.sh; \
+    echo 'root:docker' | chpasswd; \
+    useradd -ms /bin/bash apps;
+
 USER apps
 
 CMD '/bootstrap.sh'
