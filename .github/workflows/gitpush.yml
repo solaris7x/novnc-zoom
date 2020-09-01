@@ -17,13 +17,15 @@ env:
 jobs:
   # Run tests.
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          lfs: "true"
 
-      - name: Run tests
+      - name: Test Dockerfile
         run: |
           if [ -f docker-compose.test.yml ]; then
             docker-compose --file docker-compose.test.yml build
@@ -36,13 +38,15 @@ jobs:
   # See also https://docs.docker.com/docker-hub/builds/
   push:
     # Ensure test job passes before pushing image.
-    needs: build
+    needs: test
 
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          lfs: "true"
 
       - name: Build image
         run: docker build . --file Dockerfile --tag $IMAGE_NAME

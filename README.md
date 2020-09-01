@@ -10,9 +10,11 @@ This will launch a new Docker container and run Xvfb, Fluxbox, and a VNC server.
 docker run -d -p 5900:5900 -p 8080:8080 -e VNC_SERVER_PASSWORD=password --user apps  iluvmonero/docker-xvfb
 ```
 
-##Environmental Vars
+## Environmental Vars
+
 PORT : NoVNC port , default 8080
-VNC_SERVER_PASSWORD : password , can be left blank 
+
+VNC_SERVER_PASSWORD : password , can be left blank
 
 **Note**: While the _`VNC_SERVER_PASSWORD`_ argument is optional, it is not if you are using the macOS VNC viewer. If you do not set a password on macOS, you will not be able to connect to the container’s VNC server.
 
