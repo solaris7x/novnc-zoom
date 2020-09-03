@@ -10,8 +10,10 @@ readonly G_LOG_E='[ERROR]'
 main() {
     launch_xvfb
     launch_window_manager
+    launch_pulseaudio
     run_vnc_server
     run_novnc_server
+    run_nginx
 }
 
 launch_xvfb() {
@@ -74,8 +76,17 @@ run_vnc_server() {
     # wait $!
 }
 
+launch_pulseaudio() {
+    pulseaudio -D --exit-idle-time=-1
+    pacmd load-module module-virtual-source
+}
+
 run_novnc_server() {
-    /easy-novnc_linux-64bit -a ":${PORT:-8080}" ${EASY_NOVNC_ARGS:-''}
+    /easy-novnc_linux-64bit -a ":${NOVNC_PORT:-6901}" ${EASY_NOVNC_ARGS:-''} &
+}
+
+run_nginx() {
+    nginx -g 'daemon off;'
 }
 
 control_c() {

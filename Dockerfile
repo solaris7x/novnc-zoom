@@ -5,22 +5,29 @@ ENV DEBIAN_FRONTEND=noninteractive \
     DEBCONF_NONINTERACTIVE_SEEN=true
 
 # Install desktop + midori + zoom + cleanup
-RUN apt-get update; apt-get clean; \
-    apt-get install -y x11vnc xvfb wget wmctrl openbox xdg-utils \
-    && apt install -y --no-install-recommends midori \
-    && wget --no-check-certificate -O '/tmp/zoom.deb' 'https://zoom.us/client/latest/zoom_amd64.deb' \
-    && apt install -y --no-install-recommends '/tmp/zoom.deb' \
+RUN apt-get update; apt-get clean \
+    && apt-get install -qqy x11vnc xvfb wget wmctrl openbox xdg-utils pulseaudio nginx gettext-base \
+    && apt install -qqy --no-install-recommends midori \
+    && wget --no-check-certificate -qO '/tmp/zoom.deb' 'https://zoom.us/client/latest/zoom_amd64.deb' \
+    && apt install -qqy --no-install-recommends '/tmp/zoom.deb' \
     && rm -rf '/tmp/zoom.deb' \
     && rm -rf /var/lib/apt/lists/*;
 
-# Copy Bootstrap script + easy-novnc https://github.com/pgaskin/easy-novnc
+# Copy Bootstrap script 
 COPY bootstrap.sh /bootstrap.sh
-COPY easy-novnc_linux-64bit /easy-novnc_linux-64bit
+# Copy easy-novnc https://github.com/pgaskin/easy-novnc
+COPY ./binary/easy-novnc_linux-64bit /easy-novnc_linux-64bit
+# Copy NGINX config
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
+COPY ./nginx/site.conf /etc/nginx/conf.d/default.conf
 
 #Add user apps and set root passwd to "docker"
+## add permissions for nginx user
 RUN chmod 755 /bootstrap.sh; \
     echo 'root:docker' | chpasswd; \
-    useradd -ms /bin/bash apps;
+    useradd -ms /bin/bash apps; \
+    rm -f /etc/nginx/sites-enabled/default; \
+    chown -R apps:apps /var/log/nginx
 
 USER apps
 
