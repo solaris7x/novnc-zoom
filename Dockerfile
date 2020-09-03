@@ -2,7 +2,8 @@ FROM ubuntu:focal
 
 #Set apt to non-interactive
 ENV DEBIAN_FRONTEND=noninteractive \
-    DEBCONF_NONINTERACTIVE_SEEN=true
+    DEBCONF_NONINTERACTIVE_SEEN=true \
+    PORT=8080
 
 # Install desktop + midori + zoom + cleanup
 RUN apt-get update; apt-get clean \
@@ -19,7 +20,7 @@ COPY bootstrap.sh /bootstrap.sh
 COPY ./binary/easy-novnc_linux-64bit /easy-novnc_linux-64bit
 # Copy NGINX config
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
-COPY ./nginx/site.conf /etc/nginx/conf.d/default.conf
+COPY ./nginx/site.conf.template /etc/nginx/conf.d/default.conf.template
 
 #Add user apps and set root passwd to "docker"
 ## add permissions for nginx user
@@ -27,7 +28,8 @@ RUN chmod 755 /bootstrap.sh; \
     echo 'root:docker' | chpasswd; \
     useradd -ms /bin/bash apps; \
     rm -f /etc/nginx/sites-enabled/default; \
-    chown -R apps:apps /var/log/nginx
+    chown -R apps:apps /var/log/nginx; \
+    chown -R apps:apps /etc/nginx/conf.d/;
 
 USER apps
 
