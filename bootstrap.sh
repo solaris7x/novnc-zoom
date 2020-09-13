@@ -13,6 +13,7 @@ main() {
     launch_pulseaudio
     run_vnc_server
     run_novnc_server
+    get_zoomauth
     run_nginx
 }
 
@@ -83,6 +84,17 @@ launch_pulseaudio() {
 
 run_novnc_server() {
     /easy-novnc_linux-64bit -a ":${NOVNC_PORT:-6901}" ${EASY_NOVNC_ARGS:-''} &
+}
+
+get_zoomauth() {
+    if [ ! -z "${ZOOMAUTH_URL:-}" ]
+    then
+        echo "Getting zoomauth"
+        wget -qO /tmp/zoomauth.tar.gz --no-check-certificate ${ZOOMAUTH_URL} \
+        && tar -xzf /tmp/zoomauth.tar.gz -C /home/apps/
+    else
+        echo "No Zoom Auth provided"
+    fi
 }
 
 run_nginx() {

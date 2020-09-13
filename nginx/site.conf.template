@@ -1,3 +1,7 @@
+upstream novnc_upstream {
+    server localhost:6901;
+}
+
 server {
     listen $PORT;
 
@@ -7,7 +11,7 @@ server {
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade"; 
-            proxy_pass  http://localhost:6901;
+            proxy_pass  http://novnc_upstream;
   
             # VNC connection timeout
             proxy_read_timeout 31s;
