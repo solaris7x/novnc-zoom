@@ -25,5 +25,19 @@ server {
             expires off;
             etag off;
           }
-
+    location /zoom {
+        default_type text/html;
+        content_by_lua_block{
+            local args = ngx.req.get_uri_args()
+            os.execute(string.format("bash /resty/launch_zoom.sh %s > /tmp/zoomscr.log &", args["meetid"]))
+            return ngx.say(string.format("<h1>Joining zoom meeting, <a href='zoommtg://zoom.us/join?action=join&confno=%s' >zoommtg://zoom.us/join?action=join&confno=%s<a></h1>", args["meetid"], args["meetid"]))
+        }
+    }
+    location /test {
+        default_type text/html;
+        echo "Got awake request";
+        content_by_lua_block{
+            return ngx.say("<h1>Got awake request</h1>")
+        }
+    }
 }

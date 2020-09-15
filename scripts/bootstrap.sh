@@ -98,9 +98,9 @@ get_zoomauth() {
 }
 
 run_nginx() {
-    envsubst '\$PORT' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf;
-    echo "Substituted $PORT in nginx";
-    nginx -g 'daemon off;'
+    envsubst '\$PORT' < /resty/conf.d/default.conf.template > /resty/conf.d/default.conf \
+    && echo "Substituted $PORT in nginx";
+    nginx
 }
 
 control_c() {
